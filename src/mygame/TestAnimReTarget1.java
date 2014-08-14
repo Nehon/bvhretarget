@@ -62,12 +62,11 @@ import com.jme3.scene.VertexBuffer.Usage;
 import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.debug.SkeletonDebugger;
 import com.jme3.scene.plugins.bvh.BVHUtils;
-import com.jme3.scene.plugins.bvh.BoneMapping;
 import com.jme3.util.BufferUtils;
 import java.util.HashMap;
-import java.util.Map;
 import static com.jme3.math.FastMath.*;
 import static com.jme3.math.Vector3f.*;
+import com.jme3.scene.plugins.bvh.SkeletonMapping;
 
 
 
@@ -116,100 +115,95 @@ public class TestAnimReTarget1 extends SimpleApplication implements AnimEventLis
       //  System.out.println(((BoundingBox)model.getWorldBound()).getYExtent());
         //final AnimChannel animChannel = createAnimSkeleton(animData, ratio, animName);
 
-        Map<String, BoneMapping> boneMapping = new HashMap<String, BoneMapping>();
+       SkeletonMapping skMap = new SkeletonMapping();
         //Sinbad
-        boneMapping.put("Root",new BoneMapping("Root"));
-        boneMapping.put("hips",new BoneMapping("Waist"));
-        boneMapping.put("spine",new BoneMapping("Stomach",PI,UNIT_Y));
-        boneMapping.put("ribs",new BoneMapping("Chest",PI,UNIT_Y));
-        boneMapping.put("neck",new BoneMapping("Neck",PI,UNIT_Y));
-        boneMapping.put("head",new BoneMapping("Head",PI,UNIT_Y));
-        boneMapping.put("shoulder.L",new BoneMapping("Clavicle.L"));
-        boneMapping.put("shoulder.R",new BoneMapping("Clavicle.R"));
-        boneMapping.put("upper_arm.L",new BoneMapping("Humerus.L",PI,UNIT_Y));
-        boneMapping.put("upper_arm.R",new BoneMapping("Humerus.R",PI,UNIT_Y));
-        boneMapping.put("forearm.L",new BoneMapping("Ulna.L"));
-        boneMapping.put("forearm.R",new BoneMapping("Ulna.R"));
-        boneMapping.put("hand.L",new BoneMapping("Hand.L",PI,UNIT_Y));
-        boneMapping.put("hand.R",new BoneMapping("Hand.R",PI,UNIT_Y));
-        boneMapping.put("thigh.L",new BoneMapping("Thigh.L",PI,UNIT_Y));
-        boneMapping.put("thigh.R",new BoneMapping("Thigh.R",PI,UNIT_Y));
-        boneMapping.put("shin.L",new BoneMapping("Calf.L",PI,UNIT_Y));
-        boneMapping.put("shin.R",new BoneMapping("Calf.R",PI,UNIT_Y));
-        boneMapping.put("foot.L",new BoneMapping("Foot.L"));
-        boneMapping.put("foot.R",new BoneMapping("Foot.R"));
+        skMap.map("Root","Root");
+        skMap.map("hips","Waist");
+        skMap.map("spine","Stomach",PI,UNIT_Y);
+        skMap.map("ribs","Chest",PI,UNIT_Y);
+        skMap.map("neck","Neck",PI,UNIT_Y);
+        skMap.map("head","Head",PI,UNIT_Y);
+        skMap.map("shoulder.L","Clavicle.L");
+        skMap.map("shoulder.R","Clavicle.R");
+        skMap.map("upper_arm.L","Humerus.L",PI,UNIT_Y);
+        skMap.map("upper_arm.R","Humerus.R",PI,UNIT_Y);
+        skMap.map("forearm.L","Ulna.L");
+        skMap.map("forearm.R","Ulna.R");
+        skMap.map("hand.L","Hand.L",PI,UNIT_Y);
+        skMap.map("hand.R","Hand.R",PI,UNIT_Y);
+        skMap.map("thigh.L","Thigh.L",PI,UNIT_Y);
+        skMap.map("thigh.R","Thigh.R",PI,UNIT_Y);
+        skMap.map("shin.L","Calf.L",PI,UNIT_Y);
+        skMap.map("shin.R","Calf.R",PI,UNIT_Y);
+        skMap.map("foot.L","Foot.L");
+        skMap.map("foot.R","Foot.R");
         
-         boneMapping.put("thumb.01.L",new BoneMapping("ThumbProx.L"));
-         boneMapping.put("thumb.02.L",new BoneMapping("ThumbMed.L"));
-         boneMapping.put("thumb.03.L",new BoneMapping("ThumbDist.L"));
+         skMap.map("thumb.01.L","ThumbProx.L");
+         skMap.map("thumb.02.L","ThumbMed.L");
+         skMap.map("thumb.03.L","ThumbDist.L");
          
-         boneMapping.put("finger_index.01.L",new BoneMapping("IndexFingerProx.L"));
-         boneMapping.put("finger_index.02.L",new BoneMapping("IndexFingerMed.L"));
-         boneMapping.put("finger_index.03.L",new BoneMapping("IndexFingerDist.L"));
+         skMap.map("finger_index.01.L","IndexFingerProx.L");
+         skMap.map("finger_index.02.L","IndexFingerMed.L");
+         skMap.map("finger_index.03.L","IndexFingerDist.L");
          
-         boneMapping.put("finger_middle.01.L",new BoneMapping("MiddleFingerProx.L"));
-         boneMapping.put("finger_middle.02.L",new BoneMapping("MiddleFingerMed.L"));
-         boneMapping.put("finger_middle.03.L",new BoneMapping("MiddleFingerDist.L"));
+         skMap.map("finger_middle.01.L","MiddleFingerProx.L");
+         skMap.map("finger_middle.02.L","MiddleFingerMed.L");
+         skMap.map("finger_middle.03.L","MiddleFingerDist.L");
          
-         boneMapping.put("finger_ring.01.L",new BoneMapping("RingFingerProx.L"));
-         boneMapping.put("finger_ring.02.L",new BoneMapping("RingFingerMed.L"));
-         boneMapping.put("finger_ring.03.L",new BoneMapping("RingFingerDist.L"));
+         skMap.map("finger_ring.01.L","RingFingerProx.L");
+         skMap.map("finger_ring.02.L","RingFingerMed.L");
+         skMap.map("finger_ring.03.L","RingFingerDist.L");
          
-         boneMapping.put("finger_pinky.01.L",new BoneMapping("PinkyProx.L"));
-         boneMapping.put("finger_pinky.02.L",new BoneMapping("PinkyMed.L"));
-         boneMapping.put("finger_pinky.03.L",new BoneMapping("PinkyDist.L"));
+         skMap.map("finger_pinky.01.L","PinkyProx.L");
+         skMap.map("finger_pinky.02.L","PinkyMed.L");
+         skMap.map("finger_pinky.03.L","PinkyDist.L");
          
-         boneMapping.put("thumb.01.R",new BoneMapping("ThumbProx.R"));
-         boneMapping.put("thumb.02.R",new BoneMapping("ThumbMed.R"));
-         boneMapping.put("thumb.03.R",new BoneMapping("ThumbDist.R"));
+         skMap.map("thumb.01.R","ThumbProx.R");
+         skMap.map("thumb.02.R","ThumbMed.R");
+         skMap.map("thumb.03.R","ThumbDist.R");
          
-         boneMapping.put("finger_index.01.R",new BoneMapping("IndexFingerProx.R"));
-         boneMapping.put("finger_index.02.R",new BoneMapping("IndexFingerMed.R"));
-         boneMapping.put("finger_index.03.R",new BoneMapping("IndexFingerDist.R"));
+         skMap.map("finger_index.01.R","IndexFingerProx.R");
+         skMap.map("finger_index.02.R","IndexFingerMed.R");
+         skMap.map("finger_index.03.R","IndexFingerDist.R");
          
-         boneMapping.put("finger_middle.01.R",new BoneMapping("MiddleFingerProx.R"));
-         boneMapping.put("finger_middle.02.R",new BoneMapping("MiddleFingerMed.R"));
-         boneMapping.put("finger_middle.03.R",new BoneMapping("MiddleFingerDist.R"));
+         skMap.map("finger_middle.01.R","MiddleFingerProx.R");
+         skMap.map("finger_middle.02.R","MiddleFingerMed.R");
+         skMap.map("finger_middle.03.R","MiddleFingerDist.R");
          
-         boneMapping.put("finger_ring.01.R",new BoneMapping("RingFingerProx.R"));
-         boneMapping.put("finger_ring.02.R",new BoneMapping("RingFingerMed.R"));
-         boneMapping.put("finger_ring.03.R",new BoneMapping("RingFingerDist.R"));
+         skMap.map("finger_ring.01.R","RingFingerProx.R");
+         skMap.map("finger_ring.02.R","RingFingerMed.R");
+         skMap.map("finger_ring.03.R","RingFingerDist.R");
          
-         boneMapping.put("finger_pinky.01.R",new BoneMapping("PinkyProx.R"));
-         boneMapping.put("finger_pinky.02.R",new BoneMapping("PinkyMed.R"));
-         boneMapping.put("finger_pinky.03.R",new BoneMapping("PinkyDist.R"));
+         skMap.map("finger_pinky.01.R","PinkyProx.R");
+         skMap.map("finger_pinky.02.R","PinkyMed.R");
+         skMap.map("finger_pinky.03.R","PinkyDist.R");
         
          
          
-    //     boneMapping.put("jaw",new BoneMapping("Jaw",PI,UNIT_Y));
-//         boneMapping.put("Cheek.R",new BoneMapping("Cheek.R"));
-//         boneMapping.put("Cheek.L",new BoneMapping("Cheek.L"));
+    //     skMap.put("jaw","Jaw",PI,UNIT_Y)
+//         skMap.put("Cheek.R","Cheek.R")
+//         skMap.put("Cheek.L","Cheek.L")
 ////         
-//         boneMapping.put("LipBottom.L",new BoneMapping("LowerLip"));
-//         boneMapping.put("LipTop.L",new BoneMapping("UpperLip"));
+//         skMap.put("LipBottom.L","LowerLip")
+//         skMap.put("LipTop.L","UpperLip")
 ////         
-//         boneMapping.put("LipBottom.R",new BoneMapping("LowerLip"));
-//         boneMapping.put("LipTop.R",new BoneMapping("UpperLip"));
+//         skMap.put("LipBottom.R","LowerLip")
+//         skMap.put("LipTop.R","UpperLip")
 ////        
-//         boneMapping.put("eyebrow.02.R",new BoneMapping("Brow.R"));
-//          boneMapping.put("eyebrow.02.L",new BoneMapping("Brow.L"));    
+//         skMap.put("eyebrow.02.R","Brow.R")
+//          skMap.put("eyebrow.02.L","Brow.L")    
 //          
-//          boneMapping.put("eyebrow.01.R",new BoneMapping("Brow.C"));
-//          boneMapping.put("eyebrow.01.L",new BoneMapping("Brow.C"));         
+//          skMap.put("eyebrow.01.R","Brow.C")
+//          skMap.put("eyebrow.01.L","Brow.C")         
 //         
-//         boneMapping.put("eye.L",new BoneMapping("Eye.L"));
-//         boneMapping.put("eye.R",new BoneMapping("Eye.R"));
+//         skMap.put("eye.L","Eye.L")
+//         skMap.put("eye.R","Eye.R")
          
          
          
 //------
 //---------- bone
 //----------- bone
-                 
-
-//        boneMapping.put("Root","Root");
-//        boneMapping.put("Bone1","Bone1");
-//        boneMapping.put("Bone2","Bone2");
 //-hips bone
 //--pelvis bone
 //---tail.001 bone
@@ -309,10 +303,10 @@ public class TestAnimReTarget1 extends SimpleApplication implements AnimEventLis
 //-IKheel.R bone
 
 
-        control2.addAnim(BVHUtils.reTarget(model, model2, anim, control.getSkeleton(), boneMapping, false));
+        control2.addAnim(BVHUtils.reTarget(model, model2, anim, control.getSkeleton(), skMap, false));
 //        
 //        Animation anim2 = control.getAnim("RunTop");
-//        control2.addAnim(BVHUtils.reTarget(model, model2, anim2, control.getSkeleton(), boneMapping, false));
+//        control2.addAnim(BVHUtils.reTarget(model, model2, anim2, control.getSkeleton(), skMap, false));
 
         SkeletonDebugger skeletonDebug = new SkeletonDebugger("skeleton", control.getSkeleton());
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");

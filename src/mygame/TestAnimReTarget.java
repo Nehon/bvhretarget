@@ -61,12 +61,10 @@ import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.VertexBuffer.Usage;
 import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.debug.SkeletonDebugger;
-import com.jme3.scene.plugins.bvh.BVHLoader;
 import com.jme3.scene.plugins.bvh.BVHUtils;
-import com.jme3.scene.plugins.bvh.BoneMapping;
+import com.jme3.scene.plugins.bvh.SkeletonMapping;
 import com.jme3.util.BufferUtils;
 import java.util.HashMap;
-import java.util.Map;
 
 public class TestAnimReTarget extends SimpleApplication implements AnimEventListener {
 
@@ -75,19 +73,13 @@ public class TestAnimReTarget extends SimpleApplication implements AnimEventList
         app.start();
 
     }
-    private final String poseAnim = "IdleBase";
 
     @Override
     public void simpleInitApp() {
         createLights();
         final String animName = "anim";
-       //  final String animName = "Dance";
-//        Node model = (Node) assetManager.loadModel("Models/Sinbad/Sinbad.mesh.j3o");
-        //Node model2 = (Node) assetManager.loadModel("Models/Jaime/Jaime.j3o");
         Node model = (Node) assetManager.loadModel("Models/Test/Cube1.j3o");
         Node model2 = (Node) assetManager.loadModel("Models/Test/Cube2.j3o");
-    //    Node model = (Node) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-
      
         rootNode.attachChild(model);
         rootNode.attachChild(model2);
@@ -99,146 +91,21 @@ public class TestAnimReTarget extends SimpleApplication implements AnimEventList
         AnimControl control = model.getControl(AnimControl.class);
         AnimControl control2 = model2.getControl(AnimControl.class);
         Animation anim = control.getAnim(animName);
-        //System.err.println(control2.getSkeleton());
         System.err.println("Jaime skeleton height : "+BVHUtils.getSkeletonHeight(control2.getSkeleton()));
         System.err.println("Sinbad skeleton height : "+BVHUtils.getSkeletonHeight(control.getSkeleton()));
         
         float targetHeight = ((BoundingBox)model2.getWorldBound()).getYExtent();//BVHUtils.getSkeletonHeight(control.getSkeleton());
         float sourceHeight = ((BoundingBox)model.getWorldBound()).getYExtent();
         float ratio = sourceHeight / targetHeight;
-    //    model.move(-3, sourceHeight+0.7f, 0);
         model.move(-3, 0, 0);
         model2.move(3, 0, 0);
-      //  model2.scale(ratio/1.5f);
-      //  System.out.println(((BoundingBox)model.getWorldBound()).getYExtent());
-        //final AnimChannel animChannel = createAnimSkeleton(animData, ratio, animName);
 
-        Map<String, BoneMapping> boneMapping = new HashMap<String, BoneMapping>();
-        //Sinbad
-//        boneMapping.put("Root","Root");
-//        boneMapping.put("hips","Waist");
-//        boneMapping.put("spine","Stomach");
-//        boneMapping.put("ribs","Chest");
-//        boneMapping.put("neck","Neck");
-//        boneMapping.put("head","Head");
-//        boneMapping.put("shoulder.L","Clavicle.L");
-//        boneMapping.put("shoulder.R","Clavicle.R");
-//        boneMapping.put("upper_arm.L","Humerus.L");
-//        boneMapping.put("upper_arm.R","Humerus.R");
-//        boneMapping.put("forearm.L","Ulna.L");
-//        boneMapping.put("forearm.R","Ulna.R");
-//        boneMapping.put("hand.L","Hand.L");
-//        boneMapping.put("hand.R","Hand.R");
-//        boneMapping.put("thigh.L","Thigh.L");
-//        boneMapping.put("thigh.R","Thigh.R");
-//        boneMapping.put("shin.L","Calf.L");
-//        boneMapping.put("shin.R","Calf.R");
-//        boneMapping.put("foot.L","Foot.L");
-//        boneMapping.put("foot.R","Foot.R");
-        
-        boneMapping.put("Root",new BoneMapping("Root"));
-        boneMapping.put("Bone1",new BoneMapping("Bone1", new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y)));
-        boneMapping.put("Bone2",new BoneMapping("Bone2", new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y)));
-//-hips bone
-//--pelvis bone
-//---tail.001 bone
-//----tail.002 bone
-//-----tail.003 bone
-//------tail.004 bone
-//-------tail.005 bone
-//--------tail.006 bone
-//---------tail.007 bone
-//----------tail.008 bone
-//-----------tail.009 bone
-//------------tail.010 bone
-//---thigh.L bone
-//----shin.L bone
-//-----foot.L bone
-//------toe.L bone
-//---thigh.R bone
-//----shin.R bone
-//-----foot.R bone
-//------toe.R bone
-//--spine bone
-//---ribs bone
-//----neck bone
-//-----head bone
-//------IKjawTarget bone
-//------jaw bone
-//------LipBottom.R bone
-//------LipTop.R bone
-//------LipSide.R bone
-//------eyebrow.01.R bone
-//------eyebrow.02.R bone
-//------eyebrow.03.R bone
-//------Cheek.R bone
-//------LipBottom.L bone
-//------LipTop.L bone
-//------LipSide.L bone
-//------eyebrow.01.L bone
-//------eyebrow.02.L bone
-//------eyebrow.03.L bone
-//------Cheek.L bone
-//------EyeLidTop.R bone
-//------EyeLidBottom.R bone
-//------EyeLidTop.L bone
-//------EyeLidBottom.L bone
-//------SightTarget bone
-//-------IKeyeTarget.R bone
-//-------IKeyeTarget.L bone
-//------eye.L bone
-//------eye.R bone
-//----shoulder.L bone
-//-----upper_arm.L bone
-//------forearm.L bone
-//-------hand.L bone
-//--------palm.01.L bone
-//---------finger_index.01.L bone
-//----------finger_index.02.L bone
-//-----------finger_index.03.L bone
-//---------thumb.01.L bone
-//----------thumb.02.L bone
-//-----------thumb.03.L bone
-//--------palm.04.L bone
-//---------finger_pinky.01.L bone
-//----------finger_pinky.02.L bone
-//-----------finger_pinky.03.L bone
-//--------palm.02.L bone
-//---------finger_middle.01.L bone
-//----------finger_middle.02.L bone
-//-----------finger_middle.03.L bone
-//--------palm.03.L bone
-//---------finger_ring.01.L bone
-//----------finger_ring.02.L bone
-//-----------finger_ring.03.L bone
-//----shoulder.R bone
-//-----upper_arm.R bone
-//------forearm.R bone
-//-------hand.R bone
-//--------palm.01.R bone
-//---------finger_index.01.R bone
-//----------finger_index.02.R bone
-//-----------finger_index.03.R bone
-//---------thumb.01.R bone
-//----------thumb.02.R bone
-//-----------thumb.03.R bone
-//--------palm.04.R bone
-//---------finger_pinky.01.R bone
-//----------finger_pinky.02.R bone
-//-----------finger_pinky.03.R bone
-//--------palm.02.R bone
-//---------finger_middle.01.R bone
-//----------finger_middle.02.R bone
-//-----------finger_middle.03.R bone
-//--------palm.03.R bone
-//---------finger_ring.01.R bone
-//----------finger_ring.02.R bone
-//-----------finger_ring.03.R bone
-//-IKheel.L bone
-//-IKheel.R bone
+        SkeletonMapping skMap = new SkeletonMapping();
+        skMap.map("Root","Root");
+        skMap.map("Bone1","Bone1", new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
+        skMap.map("Bone2","Bone2", new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_Y));
 
-
-        control2.addAnim(BVHUtils.reTarget(model, model2, anim, control.getSkeleton(), boneMapping, false));
+        control2.addAnim(BVHUtils.reTarget(model, model2, anim, control.getSkeleton(), skMap, false));
 
         SkeletonDebugger skeletonDebug = new SkeletonDebugger("skeleton", control.getSkeleton());
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");

@@ -40,6 +40,7 @@ import com.jme3.animation.LoopMode;
 import com.jme3.scene.plugins.bvh.BVHAnimData;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingBox;
+import com.jme3.export.xml.XMLExporter;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
@@ -65,14 +66,17 @@ import com.jme3.scene.VertexBuffer.Usage;
 import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.plugins.bvh.BVHLoader;
 import com.jme3.scene.plugins.bvh.BVHUtils;
-import com.jme3.scene.plugins.bvh.BoneMapping;
 import com.jme3.util.BufferUtils;
 import java.util.HashMap;
-import java.util.Map;
 import static com.jme3.math.FastMath.*;
 import static com.jme3.math.Vector3f.*;
+import com.jme3.scene.plugins.bvh.SkeletonMapping;
 import com.jme3.util.TempVars;
 import custom.SkeletonDebugger;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TestBVHReTarget extends SimpleApplication implements AnimEventListener {
 
@@ -111,47 +115,49 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
 
         System.out.println(animData.getSkeleton());
 
-        Map<String, BoneMapping> boneMapping = new HashMap<String, BoneMapping>();
+        SkeletonMapping skMap = new SkeletonMapping();
         //Sinbad - Ballerina
-        boneMapping.put("Root", new BoneMapping("Hips", PI, UNIT_Y));
-        boneMapping.put("Stomach", new BoneMapping("Chest", PI, UNIT_Y));
-        boneMapping.put("Neck", new BoneMapping("Neck", PI, UNIT_Y));
-        boneMapping.put("Head", new BoneMapping("Head", PI, UNIT_Y));
-        boneMapping.put("Clavicle.L", new BoneMapping("LeftCollar", new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Clavicle.R", new BoneMapping("RightCollar", new Quaternion().fromAngleAxis(HALF_PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Humerus.L", new BoneMapping("LeftUpArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Humerus.R", new BoneMapping("RightUpArm", new Quaternion().fromAngleAxis(-PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Ulna.L", new BoneMapping("LeftLowArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Y))));
-        boneMapping.put("Ulna.R", new BoneMapping("RightLowArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y))));
-        boneMapping.put("Hand.L", new BoneMapping("LeftHand", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Hand.R", new BoneMapping("RightHand", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y))));
-        boneMapping.put("Thigh.L", new BoneMapping("LeftUpLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Thigh.R", new BoneMapping("RightUpLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Calf.L", new BoneMapping("LeftLowLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Calf.R", new BoneMapping("RightLowLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Foot.L", new BoneMapping("LeftFoot", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-        boneMapping.put("Foot.R", new BoneMapping("RightFoot", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
+        skMap.map("Root", "Hips", PI, UNIT_Y);
+        skMap.map("Stomach", "Chest", PI, UNIT_Y);
+        skMap.map("Neck", "Neck", PI, UNIT_Y);
+        skMap.map("Head", "Head", PI, UNIT_Y);
+        skMap.map("Clavicle.L", "LeftCollar", new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Clavicle.R", "RightCollar", new Quaternion().fromAngleAxis(HALF_PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Humerus.L", "LeftUpArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Humerus.R", "RightUpArm", new Quaternion().fromAngleAxis(-PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Ulna.L", "LeftLowArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Y)));
+        skMap.map("Ulna.R", "RightLowArm", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y)));
+        skMap.map("Hand.L", "LeftHand", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Hand.R", "RightHand", new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y)));
+        skMap.map("Thigh.L", "LeftUpLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Thigh.R", "RightUpLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Calf.L", "LeftLowLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Calf.R", "RightLowLeg", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Foot.L", "LeftFoot", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        skMap.map("Foot.R", "RightFoot", new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Root", "Hips",PI,UNIT_Y);
+        //        skMap.map("Stomach", "Chest",PI,UNIT_Y);
+        //        skMap.map("Chest", "CS_BVH",PI,UNIT_Y);        
+        //        skMap.map("Neck", "Neck",PI,UNIT_Y);
+        //        skMap.map("Head", "Head",PI,UNIT_Y);
+        //        skMap.map("Clavicle.L", "LeftCollar",new Quaternion().fromAngleAxis(-HALF_PI-HALF_PI/3f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Clavicle.R", "RightCollar",new Quaternion().fromAngleAxis(HALF_PI+HALF_PI/3f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Humerus.L", "LeftShoulder",new Quaternion().fromAngleAxis(PI+HALF_PI/5f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Humerus.R", "RightShoulder",new Quaternion().fromAngleAxis(-PI-HALF_PI/5f, UNIT_Z).mult(new Quaternion().fromAngleAxis(-PI, UNIT_Y)));
+        //        skMap.map("Ulna.L", "LeftElbow",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Y)));
+        //        skMap.map("Ulna.R", "RightElbow",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y)));
+        //        skMap.map("Hand.L", "LeftWrist",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Hand.R", "RightWrist",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y)));
+        //        skMap.map("Thigh.L", "LeftHip",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Thigh.R", "RightHip",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Calf.L", "LeftKnee",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Calf.R", "RightKnee",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Foot.L", "LeftAnkle",new Quaternion().fromAngleAxis(PI-HALF_PI/1.5f, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
+        //        skMap.map("Foot.R", "RightAnkle",new Quaternion().fromAngleAxis(PI-HALF_PI/1.5f, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
 
 
-//        boneMapping.put("Root", new BoneMapping("Hips",PI,UNIT_Y));
-//        boneMapping.put("Stomach", new BoneMapping("Chest",PI,UNIT_Y));
-//        boneMapping.put("Chest", new BoneMapping("CS_BVH",PI,UNIT_Y));        
-//        boneMapping.put("Neck", new BoneMapping("Neck",PI,UNIT_Y));
-//        boneMapping.put("Head", new BoneMapping("Head",PI,UNIT_Y));
-//        boneMapping.put("Clavicle.L", new BoneMapping("LeftCollar",new Quaternion().fromAngleAxis(-HALF_PI-HALF_PI/3f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Clavicle.R", new BoneMapping("RightCollar",new Quaternion().fromAngleAxis(HALF_PI+HALF_PI/3f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Humerus.L", new BoneMapping("LeftShoulder",new Quaternion().fromAngleAxis(PI+HALF_PI/5f, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Humerus.R", new BoneMapping("RightShoulder",new Quaternion().fromAngleAxis(-PI-HALF_PI/5f, UNIT_Z).mult(new Quaternion().fromAngleAxis(-PI, UNIT_Y))));
-//        boneMapping.put("Ulna.L", new BoneMapping("LeftElbow",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(-HALF_PI, UNIT_Y))));
-//        boneMapping.put("Ulna.R", new BoneMapping("RightElbow",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y))));
-//        boneMapping.put("Hand.L", new BoneMapping("LeftWrist",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Hand.R", new BoneMapping("RightWrist",new Quaternion().fromAngleAxis(PI, UNIT_Z).mult(new Quaternion().fromAngleAxis(HALF_PI, UNIT_Y))));
-//        boneMapping.put("Thigh.L", new BoneMapping("LeftHip",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Thigh.R", new BoneMapping("RightHip",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Calf.L", new BoneMapping("LeftKnee",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Calf.R", new BoneMapping("RightKnee",new Quaternion().fromAngleAxis(PI, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Foot.L", new BoneMapping("LeftAnkle",new Quaternion().fromAngleAxis(PI-HALF_PI/1.5f, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
-//        boneMapping.put("Foot.R", new BoneMapping("RightAnkle",new Quaternion().fromAngleAxis(PI-HALF_PI/1.5f, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y))));
+        saveMapping(skMap);
+
 
 
 
@@ -159,7 +165,7 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         debugAppState.addSkeleton("SinbadSkeleton", control.getSkeleton(), false);
 
         //FIXME it shouldn't be model here as first argument.
-        control.addAnim(BVHUtils.reTarget(model, model, animData.getAnimation(), animData.getSkeleton(), animData.getTimePerFrame(), boneMapping, false));
+        control.addAnim(BVHUtils.reTarget(model, model, animData.getAnimation(), animData.getSkeleton(), animData.getTimePerFrame(), skMap, false));
 
         final AnimChannel channel = control.createChannel();
         control.addListener(this);
@@ -303,13 +309,13 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         rootNode.attachChild(chaseCamTarget);
         chaseCamTarget.addControl(chaseCam);
         chaseCamTarget.setLocalTranslation(model.getLocalTranslation());
-        
-        
+
+
         inputManager.addListener(new ActionListener() {
             public void onAction(String name, boolean isPressed, float tpf) {
                 if (name.equals("Pan")) {
                     if (isPressed) {
-                        pan = true;                        
+                        pan = true;
                     } else {
                         pan = false;
                     }
@@ -320,7 +326,7 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         inputManager.addListener(new AnalogListener() {
             public void onAnalog(String name, float value, float tpf) {
                 if (pan) {
-                    value *= 10f;                    
+                    value *= 10f;
                     TempVars vars = TempVars.get();
                     if (name.equals("mouseMoveDown")) {
                         chaseCamTarget.move(cam.getUp().mult(-value, vars.vect1));
@@ -343,5 +349,19 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         inputManager.addMapping("mouseMoveLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         inputManager.addMapping("mouseMoveRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
 
+    }
+
+    protected void saveMapping(SkeletonMapping skMap) {
+
+        /**
+         * Save a Node to a .xml file.
+         */
+        XMLExporter exporter = XMLExporter.getInstance();
+        File file = new File("e:/mapping.xml");
+        try {
+            exporter.save(skMap, file);
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to save node!", ex);
+        }
     }
 }

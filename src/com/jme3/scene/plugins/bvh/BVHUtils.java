@@ -27,7 +27,7 @@ public class BVHUtils {
     
     private static final Vector3f DEFAULT_SCALE= new Vector3f(Vector3f.UNIT_XYZ);
 
-    public static Animation reTarget(Spatial sourceModel, Spatial targetModel, Animation sourceAnimation, Skeleton sourceSkeleton, Map<String, BoneMapping> boneMapping, boolean skipFirstKey) {
+    public static Animation reTarget(Spatial sourceModel, Spatial targetModel, Animation sourceAnimation, Skeleton sourceSkeleton, SkeletonMapping boneMapping, boolean skipFirstKey) {
         BoneTrack track = getFirstBoneTrack(sourceAnimation);
         if (track == null) {
             throw new IllegalArgumentException("Animation must contain a boneTrack to be retargeted");
@@ -36,7 +36,7 @@ public class BVHUtils {
         return reTarget(sourceModel, targetModel, sourceAnimation, sourceSkeleton, timePerFrame, boneMapping, skipFirstKey);
     }
 
-    public static Animation reTarget(Spatial sourceModel, Spatial targetModel, Animation sourceAnimation, Skeleton sourceSkeleton, float timePerFrame, Map<String, BoneMapping> boneMapping, boolean skipFirstKey) {
+    public static Animation reTarget(Spatial sourceModel, Spatial targetModel, Animation sourceAnimation, Skeleton sourceSkeleton, float timePerFrame, SkeletonMapping boneMapping, boolean skipFirstKey) {
         Skeleton targetSkeleton = targetModel.getControl(AnimControl.class).getSkeleton();
 
         int start = skipFirstKey ? 1 : 0;
@@ -131,12 +131,12 @@ public class BVHUtils {
     //
     //the Model space transforms are the transforms of the bone in model space 
     //once the frame transforms has been applied
-    private static void computeTransforms(Bone targetBone, Skeleton sourceSkeleton, Skeleton targetSkeleton, Map<String, BoneMapping> boneMapping, int frameId, Map<Integer, InnerTrack> tracks, int animLength, Vector3f ratio, Animation anim) {
+    private static void computeTransforms(Bone targetBone, Skeleton sourceSkeleton, Skeleton targetSkeleton, SkeletonMapping boneMapping, int frameId, Map<Integer, InnerTrack> tracks, int animLength, Vector3f ratio, Animation anim) {
 
         BoneMapping mapping = boneMapping.get(targetBone.getName());
         Bone sourceBone = null;
         if (mapping != null) {
-            sourceBone = sourceSkeleton.getBone(mapping.getSourceName());
+            sourceBone = sourceSkeleton.getBone(mapping.getSourceNames().get(0));
         }
 
 

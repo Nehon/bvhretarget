@@ -1,3 +1,5 @@
 *.dll
 *.log
 master-application.jnlp
+/build/
+/dist/

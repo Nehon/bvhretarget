@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package mygame;
+package jme3test.bvh;
 
 import custom.SkeletonDebugAppState;
 import com.jme3.animation.AnimChannel;
@@ -361,7 +361,7 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         try {
             exporter.save(skMap, file);
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Failed to save node!", ex);
+            Logger.getLogger(TestBVHReTarget.class.getName()).log(Level.SEVERE, "Failed to save node!", ex);
         }
     }
 }

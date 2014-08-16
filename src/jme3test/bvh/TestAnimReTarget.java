@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package mygame;
+package jme3test.bvh;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;

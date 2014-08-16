@@ -356,12 +356,14 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         /**
          * Save a Node to a .xml file.
          */
+        String userHome = System.getProperty("user.home");
         XMLExporter exporter = XMLExporter.getInstance();
-        File file = new File("e:/mapping.xml");
+        File file = new File(userHome + "/mapping.xml");
         try {
             exporter.save(skMap, file);
+            Logger.getLogger(TestBVHReTarget.class.getName()).log(Level.INFO, "Mapping saved as " +userHome + "/mapping.xml");
         } catch (IOException ex) {
             Logger.getLogger(TestBVHReTarget.class.getName()).log(Level.SEVERE, "Failed to save node!", ex);
         }
-    }
+    } 
 }

@@ -59,6 +59,8 @@ public class SkeletonDebugger extends BatchNode {
      * The lines of the bones or the wires between their heads.
      */
     private SkeletonBone bones;
+    
+    private Skeleton skeleton;
     /**
      * The dotted lines between a bone's tail and the had of its children. Not
      * available if the length data was not provided.
@@ -79,6 +81,7 @@ public class SkeletonDebugger extends BatchNode {
      */
     public SkeletonDebugger(String name, Skeleton skeleton, boolean guessBonesOrientation) {
         super(name);
+        this.skeleton = skeleton;
         skeleton.reset();
         skeleton.updateWorldVectors();
         Map<Integer, Float> boneLengths = new HashMap<Integer, Float>();
@@ -120,6 +123,12 @@ public class SkeletonDebugger extends BatchNode {
             super.setMaterial(material);
         }
     }
+
+    public Skeleton getSkeleton() {
+        return skeleton;
+    }
+    
+    
 
     private void computeLength(Bone b, Map<Integer, Float> boneLengths, Skeleton skeleton) {
         if (b.getChildren().isEmpty()) {

@@ -26,16 +26,16 @@ import java.util.Map;
  *
  * @author Nehon
  */
-public class SkeletonDebugAppState extends AbstractAppState{
-    
-    private Node debugNode= new Node("debugNode");
-    
+public class SkeletonDebugAppState extends AbstractAppState {
+
+    private Node debugNode = new Node("debugNode");
     private Map<Skeleton, SkeletonDebugger> skeletons = new HashMap<Skeleton, SkeletonDebugger>();
-    private  Application app;
+    private Map<Skeleton, Bone> selectedBones = new HashMap<Skeleton, Bone>();
+    private Application app;
 
     @Override
-    public void initialize(AppStateManager stateManager, Application app) {        
-        ViewPort vp = app.getRenderManager().createMainView("debug", app.getCamera());        
+    public void initialize(AppStateManager stateManager, Application app) {
+        ViewPort vp = app.getRenderManager().createMainView("debug", app.getCamera());
         vp.attachScene(debugNode);
         vp.setClearDepth(true);
         this.app = app;
@@ -43,7 +43,7 @@ public class SkeletonDebugAppState extends AbstractAppState{
             skeletonDebugger.initialize(app.getAssetManager());
         }
         app.getInputManager().addListener(analogListener, "shoot");
-        app.getInputManager().addMapping("shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT),new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
+        app.getInputManager().addMapping("shoot", new MouseButtonTrigger(MouseInput.BUTTON_LEFT), new MouseButtonTrigger(MouseInput.BUTTON_RIGHT));
         super.initialize(stateManager, app);
     }
 
@@ -52,45 +52,52 @@ public class SkeletonDebugAppState extends AbstractAppState{
         debugNode.updateLogicalState(tpf);
         debugNode.updateGeometricState();
     }
-    
-    public SkeletonDebugger addSkeleton(String name, Skeleton skeleton, boolean guessBonesOrientation){
+
+    public SkeletonDebugger addSkeleton(String name, Skeleton skeleton, boolean guessBonesOrientation) {
         SkeletonDebugger sd = new SkeletonDebugger(name, skeleton, guessBonesOrientation);
         skeletons.put(skeleton, sd);
         debugNode.attachChild(sd);
-        if(isInitialized()){
+        if (isInitialized()) {
             sd.initialize(app.getAssetManager());
         }
         return sd;
     }
+    /**
+     * Pick a Target Using the Mouse Pointer. <ol><li>Map "pick target" action
+     * to a MouseButtonTrigger. <li>flyCam.setEnabled(false);
+     * <li>inputManager.setCursorVisible(true); <li>Implement action in
+     * AnalogListener (TODO).</ol>
+     */
+    private ActionListener analogListener = new ActionListener() {
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if (name.equals("shoot") && isPressed) {
+                CollisionResults results = new CollisionResults();
+                Vector2f click2d = app.getInputManager().getCursorPosition();
+                Vector3f click3d = app.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
+                Vector3f dir = app.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
+                Ray ray = new Ray(click3d, dir);
+
+                debugNode.collideWith(ray, results);
+
+                if (results.size() > 0) {
+                    // The closest result is the target that the player picked:
+                    Geometry target = results.getClosestCollision().getGeometry();
+                    for (SkeletonDebugger skeleton : skeletons.values()) {
+                        Bone selectedBone = skeleton.select(target);                        
+                        if (selectedBone != null) {
+                            selectedBones.put(skeleton.getSkeleton(), selectedBone);
+                            System.err.println("Selected Bone : " + selectedBone.getName() + " in skeleton " + skeleton.getName());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    };
     
-     /** Pick a Target Using the Mouse Pointer. <ol><li>Map "pick target" action to a MouseButtonTrigger. <li>flyCam.setEnabled(false); <li>inputManager.setCursorVisible(true); <li>Implement action in AnalogListener (TODO).</ol>
- */
- private ActionListener analogListener = new ActionListener() {
-   public void onAction(String name,  boolean isPressed,  float tpf) {
-     if (name.equals("shoot") && isPressed) {       
-       CollisionResults results = new CollisionResults();       
-       Vector2f click2d = app.getInputManager().getCursorPosition();
-       Vector3f click3d = app.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 0f).clone();
-       Vector3f dir = app.getCamera().getWorldCoordinates(new Vector2f(click2d.x, click2d.y), 1f).subtractLocal(click3d);
-       Ray ray = new Ray(click3d, dir);
-       
-       debugNode.collideWith(ray, results);
-
-       if (results.size() > 0) {
-         // The closest result is the target that the player picked:
-         Geometry target = results.getClosestCollision().getGeometry();
-           for (SkeletonDebugger skeleton : skeletons.values()) {
-               Bone selectedBone = skeleton.select(target);
-               if(selectedBone !=null){
-                   System.err.println("Selected Bone : " + selectedBone.getName() +" in skeleton "+skeleton.getName());
-                   return;
-               }
-           }       
-       }
-     } 
-   }
- }; 
-
+    public Map<Skeleton,Bone> getSelectedBones(){
+        return selectedBones;
+    }
 
     public Node getDebugNode() {
         return debugNode;
@@ -99,7 +106,4 @@ public class SkeletonDebugAppState extends AbstractAppState{
     public void setDebugNode(Node debugNode) {
         this.debugNode = debugNode;
     }
-    
-    
-    
 }

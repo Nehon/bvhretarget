@@ -72,11 +72,13 @@ import static com.jme3.math.FastMath.*;
 import static com.jme3.math.Vector3f.*;
 import com.jme3.scene.plugins.bvh.SkeletonMapping;
 import com.jme3.util.TempVars;
+import custom.MappingAppState;
 import custom.SkeletonDebugger;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jme3test.bvh.gui.GuiAppState;
 
 public class TestBVHReTarget extends SimpleApplication implements AnimEventListener {
 
@@ -156,11 +158,7 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         //        skMap.map("Foot.R", "RightAnkle",new Quaternion().fromAngleAxis(PI-HALF_PI/1.5f, UNIT_X).mult(new Quaternion().fromAngleAxis(PI, UNIT_Y)));
 
 
-        saveMapping(skMap);
-
-
-
-
+  
         //   SkeletonDebugger skeletonDebug = new SkeletonDebugger("skeleton", control.getSkeleton(), assetManager, false);
         debugAppState.addSkeleton("SinbadSkeleton", control.getSkeleton(), false);
 
@@ -188,7 +186,12 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         inputManager.addMapping(animName, new KeyTrigger(KeyInput.KEY_SPACE));
         setUpCamInput(model);
 
-
+        GuiAppState state = new GuiAppState();
+        stateManager.attach(state);
+        
+        MappingAppState mappingState = new MappingAppState(control.getSkeleton(), animData.getSkeleton());
+        stateManager.attach(mappingState);
+        
     }
     private boolean pan = false;
 
@@ -216,13 +219,13 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
         /**
          * Write text on the screen (HUD)
          */
-        guiNode.detachAllChildren();
-        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText helloText = new BitmapText(guiFont, false);
-        helloText.setSize(guiFont.getCharSet().getRenderedSize());
-        helloText.setText(text);
-        helloText.setLocalTranslation(settings.getWidth() / 2 - helloText.getLineWidth() / 2, helloText.getLineHeight(), 0);
-        guiNode.attachChild(helloText);
+       // guiNode.detachAllChildren();
+//        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+//        BitmapText helloText = new BitmapText(guiFont, false);
+//        helloText.setSize(guiFont.getCharSet().getRenderedSize());
+//        helloText.setText(text);
+//        helloText.setLocalTranslation(settings.getWidth() / 2 - helloText.getLineWidth() / 2, helloText.getLineHeight(), 0);
+//        guiNode.attachChild(helloText);
     }
 
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
@@ -351,19 +354,5 @@ public class TestBVHReTarget extends SimpleApplication implements AnimEventListe
 
     }
 
-    protected void saveMapping(SkeletonMapping skMap) {
 
-        /**
-         * Save a Node to a .xml file.
-         */
-        String userHome = System.getProperty("user.home");
-        XMLExporter exporter = XMLExporter.getInstance();
-        File file = new File(userHome + "/mapping.xml");
-        try {
-            exporter.save(skMap, file);
-            Logger.getLogger(TestBVHReTarget.class.getName()).log(Level.INFO, "Mapping saved as " +userHome + "/mapping.xml");
-        } catch (IOException ex) {
-            Logger.getLogger(TestBVHReTarget.class.getName()).log(Level.SEVERE, "Failed to save node!", ex);
-        }
-    } 
 }

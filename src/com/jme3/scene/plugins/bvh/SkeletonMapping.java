@@ -13,6 +13,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -115,6 +116,27 @@ public class SkeletonMapping implements Savable {
     
     public BoneMapping get(String targetBoneName){
         return mappings.get(targetBoneName);
+    }
+
+    /**
+     * Generate an inverse for this mapping.
+     *
+     * @return a new mapping
+     */
+    public SkeletonMapping inverse() {
+        SkeletonMapping result = new SkeletonMapping();
+        for (BoneMapping boneMapping : mappings.values()) {
+            Quaternion twist = boneMapping.getTwist();
+            Quaternion inverseTwist = twist.inverse();
+            String targetName = boneMapping.getTargetName();
+
+            List<String> sourceNames = boneMapping.getSourceNames();
+            for (String sourceName : sourceNames) {
+                result.map(sourceName, targetName, inverseTwist);
+            }
+        }
+
+        return result;
     }
 
     public void write(JmeExporter ex) throws IOException {

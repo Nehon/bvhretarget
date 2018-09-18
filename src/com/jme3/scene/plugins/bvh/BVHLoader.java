@@ -181,18 +181,18 @@ public class BVHLoader implements AssetLoader {
                         t.setZ(bVHChannel.getValues().get(i));
                     }
                     if (bVHChannel.getName().equals(BVHChannel.BVH_CHANNEL_X_ROTATION)) {
-
                         rx.fromAngleAxis((bVHChannel.getValues().get(i)) * FastMath.DEG_TO_RAD, Vector3f.UNIT_X);
+                        r.multLocal(rx);
                     }
                     if (bVHChannel.getName().equals(BVHChannel.BVH_CHANNEL_Y_ROTATION)) {
                         ry.fromAngleAxis((bVHChannel.getValues().get(i)) * FastMath.DEG_TO_RAD, Vector3f.UNIT_Y);
+                        r.multLocal(ry);
                     }
                     if (bVHChannel.getName().equals(BVHChannel.BVH_CHANNEL_Z_ROTATION)) {
                         rz.fromAngleAxis((bVHChannel.getValues().get(i)) * FastMath.DEG_TO_RAD, Vector3f.UNIT_Z);
+                        r.multLocal(rz);
                     }
                 }
-
-                r.multLocal(rz).multLocal(rx).multLocal(ry);
             }
             translations[i] = t;
             rotations[i] = r;
